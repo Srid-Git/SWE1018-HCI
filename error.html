@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Error</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+            text-align: center;
+        }
+
+        h1 {
+            color: #d9534f;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #555;
+            font-size: 18px;
+            margin-bottom: 40px;
+        }
+
+        img {
+            width: 300px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            position: relative;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.5s ease, visibility 0.5s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        .button-progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 5px;
+            background-color: #ffffff;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <img src="error.gif" alt="Error Image">
+    <h1>Internet Not Connected</h1>
+    <p>Please check your connection and try again.</p>
+    <button id="retry-button">
+        Retry
+        <div class="button-progress"></div>
+    </button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const retryButton = document.getElementById("retry-button");
+            const buttonProgress = retryButton.querySelector(".button-progress");
+
+            let dwellTime = 0;
+            let dwellInterval;
+            const selectionTime = 2000; // 2 seconds dwell time for retry
+
+            retryButton.addEventListener("mouseenter", () => {
+                dwellTime = 0;
+                dwellInterval = setInterval(() => {
+                    dwellTime += 100;
+                    buttonProgress.style.width = `${(dwellTime / selectionTime) * 100}%`;
+
+                    if (dwellTime >= selectionTime) {
+                        clearInterval(dwellInterval);
+                        if (navigator.onLine) {
+                            window.location.href = "splashpage.html"; // Redirect to splash page if online
+                        } else {
+                            location.reload(); // Stay on the same page if offline
+                        }
+                    }
+                }, 100);
+            });
+
+            retryButton.addEventListener("mouseleave", () => {
+                clearInterval(dwellInterval);
+                dwellTime = 0;
+                buttonProgress.style.width = "0";
+            });
+
+            // Show the button after a small delay (mimicking progress bar completion)
+            setTimeout(() => {
+                retryButton.style.opacity = "1";
+                retryButton.style.visibility = "visible";
+            }, 1000); // Small delay for button fade-in effect
+        });
+    </script>
+</body>
+</html>
