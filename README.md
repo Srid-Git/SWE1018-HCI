@@ -22,3 +22,6 @@ page3_dino.html
 
 page4_keyboard.html
 <img width="960" alt="keyboard" src="https://github.com/user-attachments/assets/74c246c1-307d-4a2c-b9a7-1748f1a51229">
+
+ERROR.html
+<img width="960" alt="error" src="https://github.com/user-attachments/assets/1f2dced8-91eb-4219-bd08-a1f12e13206f">
