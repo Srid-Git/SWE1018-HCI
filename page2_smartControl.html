@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Control</title>
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            padding: 30px;
+            flex-grow: 1;
+        }
+        .item {
+            background-color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: left;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+        }
+        .item img {
+            width: 60px;
+            margin-right: 20px;
+        }
+        .label {
+            font-size: 18px;
+            margin-right: 10px;
+        }
+        .control-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        .progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 5px;
+            background-color: #2196F3;
+            transition: width 0.1s linear;
+        }
+        #dwellTime {
+            text-align: center;
+            padding: 20px;
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+        }
+        input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 10px;
+            background: #ddd;
+            outline: none;
+            border-radius: 5px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 25px;
+            height: 25px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 25px;
+            height: 25px;
+            background-color: #2196F3;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        .toggle {
+            padding: 10px 30px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 10px;
+        }
+        .toggle.on {
+            background-color: #4CAF50;
+        }
+        .toggle.off {
+            background-color: #f44336;
+        }
+        .degree-indicator {
+            margin-top: 5px;
+            font-size: 16px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Smart Room Control System</h1>
+        </header>
+        <div class="grid">
+            <!-- Lighting Control -->
+            <div class="item">
+                <img src="https://img.icons8.com/fluency/48/000000/light-on.png" alt="Lighting Icon">
+                <div class="control-container">
+                    <div class="label">Lighting Control</div>
+                    <button class="toggle off">Off</button>
+                    <input type="range" id="brightnessSlider" min="0" max="100" value="50">
+                </div>
+                <div class="progress"></div>
+            </div>
+
+            <!-- Temperature Control -->
+            <div class="item">
+                <img src="https://img.icons8.com/fluency/48/000000/temperature.png" alt="Temperature Icon">
+                <div class="control-container">
+                    <div class="label">Temperature</div>
+                    <input type="range" id="temperatureSlider" min="15" max="30" value="22">
+                </div>
+                <div class="progress"></div>
+            </div>
+
+            <!-- Humidity Control -->
+            <div class="item">
+                <img src="https://img.icons8.com/fluency/48/000000/hygrometer.png" alt="Humidity Icon">
+                <div class="control-container">
+                    <div class="label">Humidity</div>
+                    <input type="range" id="humiditySlider" min="20" max="100" value="60">
+                </div>
+                <div class="progress"></div>
+            </div>
+
+            <!-- Bed Position Control -->
+            <div class="item">
+                <img src="https://img.icons8.com/fluency/48/000000/bed.png" alt="Bed Icon">
+                <div class="control-container">
+                    <div class="label">Bed Position (0°, 30°, 60°, 90°)</div>
+                    <input type="range" id="bedSlider" min="0" max="90" step="30" value="0">
+                    <div id="bedAngle" class="degree-indicator">Angle: 0°</div>
+                </div>
+                <div class="progress"></div>
+            </div>
+
+            <!-- Door Lock/Unlock Control -->
+            <div class="item">
+                <img src="https://img.icons8.com/fluency/48/000000/door.png" alt="Door Icon">
+                <div class="control-container">
+                    <div class="label">Door Control</div>
+                    <button class="toggle off">Locked</button>
+                </div>
+                <div class="progress"></div>
+            </div>
+        </div>
+
+        <div id="dwellTime">Dwell Time: 0.0s</div>
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.item');
+        const dwellTimeDisplay = document.getElementById('dwellTime');
+        let dwellTime = 0;
+        let dwellInterval;
+        const selectionTime = 2000; // 2 seconds dwell time for selection
+
+        items.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                dwellTime = 0;
+                dwellInterval = setInterval(() => {
+                    dwellTime += 100;
+                    dwellTimeDisplay.textContent = `Dwell Time: ${(dwellTime / 1000).toFixed(1)}s`;
+                    item.querySelector('.progress').style.width = `${(dwellTime / selectionTime) * 100}%`;
+
+                    if (dwellTime >= selectionTime) {
+                        clearInterval(dwellInterval);
+                        handleSelection(item);
+                    }
+                }, 100);
+            });
+
+            item.addEventListener('mouseleave', () => {
+                clearInterval(dwellInterval);
+                dwellTime = 0;
+                dwellTimeDisplay.textContent = 'Dwell Time: 0.0s';
+                item.querySelector('.progress').style.width = '0';
+            });
+        });
+
+        function handleSelection(item) {
+            const name = item.querySelector('.label').textContent;
+
+            if (name.includes('Lighting')) {
+                const toggleButton = item.querySelector('.toggle');
+                if (toggleButton.classList.contains('off')) {
+                    toggleButton.textContent = 'On';
+                    toggleButton.classList.replace('off', 'on');
+                } else {
+                    toggleButton.textContent = 'Off';
+                    toggleButton.classList.replace('on', 'off');
+                }
+            } else if (name.includes('Door Control')) {
+                const toggleButton = item.querySelector('.toggle');
+                if (toggleButton.classList.contains('off')) {
+                    toggleButton.textContent = 'Unlocked';
+                    toggleButton.classList.replace('off', 'on');
+                } else {
+                    toggleButton.textContent = 'Locked';
+                    toggleButton.classList.replace('on', 'off');
+                }
+            }
+        }
+
+        // Update bed angle display
+        const bedSlider = document.getElementById('bedSlider');
+        const bedAngleDisplay = document.getElementById('bedAngle');
+
+        bedSlider.addEventListener('input', () => {
+            const value = bedSlider.value;
+            bedAngleDisplay.textContent = `Angle: ${value}°`;
+        });
+    </script>
+</body>
+</html>

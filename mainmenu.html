@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Control System - Main Menu</title>
+    <style>
+        body, html {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+        header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            padding: 30px;
+            flex-grow: 1;
+        }
+        .item {
+            background-color: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-decoration: none;
+            color: inherit;
+        }
+        .item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        .item.selected {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+        .item-name {
+            font-size: 24px;
+            font-weight: bold;
+        }
+        #dwellTime {
+            text-align: center;
+            padding: 20px;
+            font-size: 20px;
+            background-color: #333;
+            color: white;
+        }
+        .progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 5px;
+            background-color: #2196F3;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EG System - Main Menu</h1>
+        </header>
+        <div class="grid">
+            <a href="page1_internet.html" class="item" data-name="Internet Browsing">
+                <div class="progress"></div>
+                <div class="icon">🌐</div>
+                <div class="item-name">Internet</div>
+            </a>
+            <a href="page2_smartControl.html" class="item" data-name="Smart Control">
+                <div class="progress"></div>
+                <div class="icon">📄</div>
+                <div class="item-name">Smart Control</div>
+            </a>
+            <a href="page3_dino.html" class="item" data-name="Dino Game">
+                <div class="progress"></div>
+                <div class="icon">🦖</div>
+                <div class="item-name">Dino Game</div>
+            </a>
+            <a href="page4_keyboard.html" class="item" data-name="On-Screen Keyboard">
+                <div class="progress"></div>
+                <div class="icon">⌨️</div>
+                <div class="item-name">Keyboard</div>
+            </a>
+        </div>
+        <div id="dwellTime">Dwell Time: 0.0s</div>
+    </div>
+
+    <script>
+        const items = document.querySelectorAll('.item');
+        const dwellTimeDisplay = document.getElementById('dwellTime');
+        let dwellTime = 0;
+        let dwellInterval;
+        const selectionTime = 2000; // 2 seconds dwell time for selection
+
+        items.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                dwellTime = 0;
+                dwellInterval = setInterval(() => {
+                    dwellTime += 100;
+                    dwellTimeDisplay.textContent = `Dwell Time: ${(dwellTime / 1000).toFixed(1)}s`;
+                    item.querySelector('.progress').style.width = `${(dwellTime / selectionTime) * 100}%`;
+                    
+                    if (dwellTime >= selectionTime) {
+                        clearInterval(dwellInterval);
+                        window.location.href = item.getAttribute('href'); // Navigate to the page
+                    }
+                }, 100);
+            });
+
+            item.addEventListener('mouseleave', () => {
+                clearInterval(dwellInterval);
+                dwellTime = 0;
+                dwellTimeDisplay.textContent = 'Dwell Time: 0.0s';
+                item.querySelector('.progress').style.width = '0';
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>On-Screen Keyboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+        #keyboard, #suggestions {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            grid-gap: 5px;
+            justify-content: center;
+            margin: 20px auto;
+            max-width: 500px;
+        }
+        .key, .suggestion {
+            padding: 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+            position: relative;
+        }
+        #output {
+            margin: 20px;
+            font-size: 24px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            min-height: 50px;
+            width: 80%;
+            margin: 20px auto;
+        }
+        .progress {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 5px;
+            background-color: #2196F3;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <h1>On-Screen Keyboard </h1>
+    <div id="output" contenteditable="true"></div>
+    
+    <div id="suggestions"></div> <!-- Suggestions section -->
+    
+    <div id="keyboard"></div>
+
+    <script>
+        const keys = [
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+            'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P',
+            'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', ';',
+            'Z', 'X', 'C', 'V', 'B', 'N', 'M', ',', '.', '?',
+            'Space', 'Backspace', 'Clear', '🔊'  
+        ];
+
+        const suggestions = [
+            "Hello", "How are you?", "Thank you", "Good morning", "Goodbye", "Yes", "No", "Please", "Sorry"
+        ];
+
+        const keyboard = document.getElementById('keyboard');
+        const suggestionsDiv = document.getElementById('suggestions');
+        const output = document.getElementById('output');
+
+        let dwellTime = 0;
+        const selectionTime = 2000; // 2 seconds for selection
+        let dwellInterval;
+
+        // Function to handle key and suggestion selection
+        function selectKey(key) {
+            if (key === 'Space') {
+                output.textContent += ' ';
+            } else if (key === 'Backspace') {
+                output.textContent = output.textContent.slice(0, -1);
+            } else if (key === 'Clear') {
+                output.textContent = '';  // Clears the text area
+            } else if (key === '🔊') {
+                readTextAloud(output.textContent); // Trigger text-to-speech
+            } else {
+                output.textContent += key;
+            }
+        }
+
+        // Text-to-Speech function using Web Speech API
+        function readTextAloud(text) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(text);
+                speechSynthesis.speak(utterance);
+            } else {
+                alert("Your browser does not support speech synthesis.");
+            }
+        }
+
+        // Function to create keys and suggestions with dwell time functionality
+        function createInteractiveElements(parent, items, type) {
+            items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.textContent = item === 'Space' ? 'Space' : item;
+                itemElement.className = type === 'key' ? 'key' : 'suggestion';
+                
+                const progressBar = document.createElement('div');
+                progressBar.className = 'progress';
+                itemElement.appendChild(progressBar);
+
+                itemElement.addEventListener('mouseenter', () => {
+                    dwellTime = 0;
+                    dwellInterval = setInterval(() => {
+                        dwellTime += 100;
+                        progressBar.style.width = `${(dwellTime / selectionTime) * 100}%`;
+                        
+                        if (dwellTime >= selectionTime) {
+                            clearInterval(dwellInterval);
+                            selectKey(item);
+                        }
+                    }, 100);
+                });
+
+                itemElement.addEventListener('mouseleave', () => {
+                    clearInterval(dwellInterval);
+                    dwellTime = 0;
+                    progressBar.style.width = '0';
+                });
+
+                parent.appendChild(itemElement);
+            });
+        }
+
+        // Create keys
+        createInteractiveElements(keyboard, keys, 'key');
+        
+        // Create suggestions
+        createInteractiveElements(suggestionsDiv, suggestions, 'suggestion');
+    </script>
+</body>
+</html>

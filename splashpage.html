@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Splash Page</title>
+    <style>
+        /* CSS */
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('background.jpg') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden;
+        }
+
+        .splash-container {
+            text-align: center;
+            opacity: 0; /* Start invisible */
+            animation: fadeIn 2s forwards; /* Fade-in animation */
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+        }
+
+        .progress-bar {
+            width: 80%;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress {
+            height: 100%;
+            width: 0;
+            background-color: #4caf50;
+            transition: width 6s linear; /* Smooth progress animation */
+        }
+
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            opacity: 0; /* Start invisible */
+            animation: fadeIn 1s 6s forwards; /* Fade-in after progress bar completes */
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px); /* Slide up effect */
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="splash-container">
+        <h1>EYE GAZE BASED CONTROL SYSTEM FOR PARALYSED PEOPLE</h1>
+        <div class="progress-bar">
+            <div class="progress"></div>
+        </div>
+        <button id="continue-button" onclick="navigateToMainMenu()">Continue</button>
+    </div>
+
+    <script>
+        // JavaScript
+        document.addEventListener("DOMContentLoaded", () => {
+            const progress = document.querySelector(".progress");
+
+            // Start loading progress bar
+            setTimeout(() => {
+                progress.style.width = "100%"; // Animate the progress bar
+            }, 100); // Small delay for smoother visual effect
+        });
+
+        function navigateToMainMenu() {
+            // Redirect to the main menu page
+            window.location.href = "mainmenu.html";
+        }
+    </script>
+</body>
+</html>
