@@ -1,5 +1,5 @@
 # SWE1018-HCI
-eye based based control system for paralysed people
+eye based control system for paralysed people
 
 main.py
 
