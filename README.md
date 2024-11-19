@@ -2,6 +2,7 @@
 eye based based control system for paralysed people
 
 main.py
+
 <img width="936" alt="main1" src="https://github.com/user-attachments/assets/b74e0e68-0b56-47f2-94ad-8979e659dc12">
 
 splashpage.html
